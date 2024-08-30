@@ -1,0 +1,6 @@
+langchain
+langchain_groq
+langchain_openai
+langchain_google_genai
+langchain_community
+openai
