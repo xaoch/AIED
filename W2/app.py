@@ -5,10 +5,13 @@ from langchain.schema.runnable import Runnable
 from langchain.schema.runnable.config import RunnableConfig
 from langchain_core.chat_history import BaseChatMessageHistory, InMemoryChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from os import environ
+
 
 import os
 import chainlit as cl
 
+key = environ.get("GROQ_KEY")
 store = {}
 config = {"configurable": {"session_id": "session1"}}
 
@@ -19,7 +22,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 
 @cl.on_chat_start
 async def on_chat_start():
-    os.environ["GROQ_API_KEY"] = "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"
+    os.environ["GROQ_API_KEY"] = key
     model = ChatGroq(model="mixtral-8x7b-32768", streaming=True)
     prompt = ChatPromptTemplate.from_messages(
         [
