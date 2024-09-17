@@ -1,0 +1,9 @@
+chromadb
+langchain
+langchain_groq
+langchain_openai
+langchain_google_genai
+chainlit
+langchain_community
+openai
+arxiv

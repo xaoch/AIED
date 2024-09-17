@@ -11,7 +11,7 @@ from os import environ
 import os
 import chainlit as cl
 
-key = environ.get("GROQ_KEY")
+
 store = {}
 config = {"configurable": {"session_id": "session1"}}
 
@@ -22,7 +22,6 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 
 @cl.on_chat_start
 async def on_chat_start():
-    os.environ["GROQ_API_KEY"] = key
     model = ChatGroq(model="mixtral-8x7b-32768", streaming=True)
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -30,7 +29,9 @@ async def on_chat_start():
                 "system",
                 """"Act as knowledgeable and gentle algebra tutor. Students will ask about how to solve a given equation, you should guide them one step at a time 
             without providing a direct answers, but using the socratic method to help them get closer to the answer. Do not answer everything in just one answer.  Always remember the original equation to provide 
-            correct guidance.""",
+            correct guidance.
+            DO NOT GO MORE THAN ONE STEP AT A TIME!
+            """,
             ),
             ("human", "{question}"),
         ]
