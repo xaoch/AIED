@@ -5,12 +5,8 @@ from langchain.schema.runnable import Runnable
 from langchain.schema.runnable.config import RunnableConfig
 from langchain_core.chat_history import BaseChatMessageHistory, InMemoryChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from os import environ
 
-
-import os
 import chainlit as cl
-
 
 store = {}
 config = {"configurable": {"session_id": "session1"}}

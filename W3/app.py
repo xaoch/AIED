@@ -1,58 +1,54 @@
-import os
-
 from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain.chains import ConversationalRetrievalChain
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain.memory import ConversationBufferMemory
 
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 #from langchain_openai import OpenAIEmbeddings
-
-from langchain.chains import ConversationalRetrievalChain
-from langchain_community.chat_models import ChatOpenAI
-
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_community.vectorstores import Chroma
-from langchain.docstore.document import Document
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain.memory import ConversationBufferMemory
 
 import chainlit as cl
 
 @cl.on_chat_start
 async def on_chat_start():
-    files = None
+   
+    ####PDF from File
 
-    # Wait for the user to upload a file
-    while files == None:
-        files = await cl.AskFileMessage(
-            content="Please upload a PDF file to begin!",
-            accept=["application/pdf"],
-            max_size_mb=20,
-            timeout=180,
-        ).send()
+    path="AdvisorHandbook.pdf"
+    
+    ####Ask for the PDF
+    #files = None
+   
+    ## Wait for the user to upload a file
+    #while files == None:
+    #    files = await cl.AskFileMessage(
+    #        content="Please upload a PDF file to begin!",
+    #        accept=["application/pdf"],
+    #        max_size_mb=20,
+    #        timeout=180,
+    #    ).send()
 
-    file = files[0]
+    #file = files[0]
+    #path=file.path
 
-    msg = cl.Message(content=f"Processing `{file.name}`...")
-    await msg.send()
+    #msg = cl.Message(content=f"Processing `{file.name}`...")
+    #await msg.send()
 
-    pdf_data = []
-    loader = PyMuPDFLoader(file.path)
+    #msg = cl.Message(content=f"Processing `{path}`...")
+    #await msg.send()
+
+    loader = PyMuPDFLoader(path)
     loaded_pdf = loader.load()
     
-    #document=loaded_pdf[0]
-    #document.metadata["source"] = 25
-    ##document.metadata["file_path"] = file.path
-    #document.metadata["title"] = "Document"
-    #pdf_data.append(document)
-
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000 , chunk_overlap=1000)
 
     texts = text_splitter.split_documents(loaded_pdf)
+    print("Chunking ready")
 
-    # Create a Chroma vector store
-
+    #### Using Local Embeddings
     #embeddings = OpenAIEmbeddings(
     #    openai_api_base="http://localhost:1234/v1",
     #    disallowed_special=(),
@@ -60,9 +56,11 @@ async def on_chat_start():
     #    check_embedding_ctx_length=False,
     #)
     
+    ### Using Google Embeddings
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
     docsearch = Chroma.from_documents(texts, embeddings)
+    print("Embeddings Ready")
 
     message_history = ChatMessageHistory()
 
@@ -99,22 +97,23 @@ async def on_chat_start():
         return_source_documents=True,
         combine_docs_chain_kwargs={'prompt': prompt}
     )
+    print("Chain ready")
 
     # Let the user know that the system is ready
-    msg.content = f"Processing `{file.name}` done. You can now ask questions!"
-    await msg.update()
+    #msg.content = f"Processing `{path}` done. You can now ask questions!"
+    #await msg.update()
 
     cl.user_session.set("chain", chain)
 
 
 @cl.on_message
 async def main(message: cl.Message):
-    chain = cl.user_session.get("chain")  # type: ConversationalRetrievalChain
+    chain = cl.user_session.get("chain")  
     cb = cl.AsyncLangchainCallbackHandler()
 
     res = await chain.ainvoke(message.content, callbacks=[cb])
     answer = res["answer"]
-    source_documents = res["source_documents"]  # type: List[Document]
+    source_documents = res["source_documents"]  
 
     source_elements_dict = {}
     source_elements = []
@@ -143,9 +142,9 @@ async def main(message: cl.Message):
             source_elements.append(
                 cl.Text(name=title, content=text_for_source, display="inline")
             )
-            source_elements.append(
-                cl.Text(content=source["raw"], name=title, display="side")
-            )
+            #source_elements.append(
+            #    cl.Pdf(path="./"+title, name=title, display="side")
+            #)
         
         source_names = [text_el.name for text_el in source_elements]
 
