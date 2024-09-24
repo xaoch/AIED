@@ -14,7 +14,7 @@ import chainlit as cl
 
 @cl.on_chat_start
 async def on_chat_start():
-   
+    await cl.Message(content="Ask a question about the ECT Programs").send()  
     ####PDF from File
 
     path="AdvisorHandbook.pdf"

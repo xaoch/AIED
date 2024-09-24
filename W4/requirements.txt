@@ -1,0 +1,13 @@
+chromadb
+langchain
+langchain_groq
+langchain_openai
+langchain_google_genai
+langchain_experimental
+chainlit
+langchain_community
+openai
+pandas
+pandasai
+openpyxl
+tabulate
