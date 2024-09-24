@@ -2,6 +2,8 @@ import pandas as pd
 import chainlit as cl
 from pandasai import Agent
 from langchain_groq.chat_models import ChatGroq 
+from pandasai.responses.streamlit_response import StreamlitResponse
+import json
 
 
 @cl.on_chat_start
@@ -43,7 +45,10 @@ async def start_chat():
     ### Load internal CSV data
     #df = pd.read_csv('data.csv')
 
-    dataAgent = Agent(df, config={"llm": llm})
+    dataAgent = Agent(df, 
+                      config={"llm": llm, "response_parser": StreamlitResponse},
+                      description="You are a data analysis agent. Your main goal is to help non-technical users to analyze data.",
+                      )
     # creating user session to store data
     cl.user_session.set('dataAgent', dataAgent)
 
