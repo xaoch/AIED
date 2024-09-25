@@ -43,7 +43,7 @@ async def start_chat():
     #df = pd.read_csv('schoolData.csv')
 
     dataAgent = Agent(df, 
-                      config={"llm": llm},
+                      config={"llm": llm, "open_charts": False},
                       description="You are a data analysis agent. Your main goal is to help non-technical users to analyze data.",
                       )
     # creating user session to store data
