@@ -2,14 +2,11 @@ import pandas as pd
 import chainlit as cl
 from pandasai import Agent
 from langchain_groq.chat_models import ChatGroq 
-from pandasai.responses.streamlit_response import StreamlitResponse
-import json
 
 
 @cl.on_chat_start
 async def start_chat():
     llm = ChatGroq(model_name="llama3-70b-8192")
-    cl.user_session.set("llm", llm)
 
      # Sending an image with the local file path
     elements = [
@@ -43,10 +40,10 @@ async def start_chat():
     #df = pd.read_excel('schoolData.xlsx')
     
     ### Load internal CSV data
-    #df = pd.read_csv('data.csv')
+    #df = pd.read_csv('schoolData.csv')
 
     dataAgent = Agent(df, 
-                      config={"llm": llm, "response_parser": StreamlitResponse},
+                      config={"llm": llm},
                       description="You are a data analysis agent. Your main goal is to help non-technical users to analyze data.",
                       )
     # creating user session to store data
