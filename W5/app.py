@@ -32,7 +32,7 @@ async def on_chat_start():
     )
 
     instructional_designer = Agent(
-        role='Instructional Designer',
+        role='InstructionalDesigner',
         goal='Create lesson plans in {topic}',
         backstory="""You are a instructional designer that is able to create lessons plans for {topic} following the latest pedagogical approaches.
         You pride yourself of using active learning methods in your designs.
@@ -93,7 +93,7 @@ async def on_chat_start():
 
     cl.user_session.set('crew', crew)
 
-    await cl.Message(content=f"Welcome to the class script creator.  Mention a topic you are interested in.").send()
+    await cl.Message(content=f"Welcome to the class script creator.  Mention a topic you are interested in.", author="Crew").send()
 
 @cl.on_message
 async def main(message: cl.Message):
@@ -112,9 +112,8 @@ async def main(message: cl.Message):
     print(f"Tasks Output: {crew_output.tasks_output}")
     print(f"Token Usage: {crew_output.token_usage}")
 
-    msg = cl.Message(content=crew_output.raw)
-    
-    await msg.send()
-
-    # Send final message
-    await msg.update()
+    for output in crew_output.tasks_output:
+        msg = cl.Message(content=output.raw,author=output.agent)
+        await msg.send()
+        # Send final message
+        await msg.update()
