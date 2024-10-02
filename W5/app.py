@@ -104,14 +104,6 @@ async def main(message: cl.Message):
     inputs = {'topic': question}
     crew_output = crew.kickoff(inputs=inputs)
    
-    print(f"Raw Output: {crew_output.raw}")
-    if crew_output.json_dict:
-        print(f"JSON Output: {json.dumps(crew_output.json_dict, indent=2)}")
-    if crew_output.pydantic:
-        print(f"Pydantic Output: {crew_output.pydantic}")
-    print(f"Tasks Output: {crew_output.tasks_output}")
-    print(f"Token Usage: {crew_output.token_usage}")
-
     for output in crew_output.tasks_output:
         msg = cl.Message(content=output.raw,author=output.agent)
         await msg.send()
