@@ -1,19 +1,9 @@
-import os
 from crewai import Agent, Task, Crew, Process
 from langchain_groq.chat_models import ChatGroq 
 import chainlit as cl
-from chainlit import run_sync
-from crewai_tools import tool
+
 
 llm = ChatGroq(model_name="groq/llama3-70b-8192")
-
-@tool("Ask Human follow up questions")
-def ask_human(question: str) -> str:
-    """Ask human follow up questions"""
-    human_response  = run_sync( cl.AskUserMessage(content=f"{question}").send())
-    if human_response:
-        return human_response["output"]
-
 
 @cl.on_chat_start
 async def on_chat_start():
@@ -46,7 +36,7 @@ async def on_chat_start():
     evaluator = Agent(
         role='Evaluator',
         goal='To critizice lesson plans to make them better.',
-        backstory="""You are very knowledgeable in the latest leearning theories and you like to analyze lessons plans to see if they fit those theories 
+        backstory="""You are very knowledgeable in the latest learning theories and you like to analyze lessons plans to see if they fit those theories 
         and recommend improvements.""",
         verbose=True,
         allow_delegation=False,
