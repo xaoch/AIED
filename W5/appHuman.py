@@ -1,4 +1,3 @@
-import os
 from crewai import Agent, Task, Crew, Process
 from langchain_groq.chat_models import ChatGroq 
 import chainlit as cl
